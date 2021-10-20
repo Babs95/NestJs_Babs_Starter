@@ -27,11 +27,10 @@ export class TodoController {
     let element: TodoEntity;
     console.log('Find un todo de la liste');
     console.log(params.id);
+    // eslint-disable-next-line prefer-const
+    element = this.todos.find((el: TodoEntity) => el.id === idTodo);
+    result = this.todos.filter((el) => el.id === params.id);
     console.log('element', element);
-    this.todos.filter((el) => {
-      if (el.id == idTodo) element = el;
-    });
-    result = this.todos.filter((el) => el.id == params.id);
     //return 'Find un todo de la liste';
     //return result.length == 0 ? 'Aucun élement trouvé' : result;
     return element == null ? 'Aucun élement trouvé' : element;
@@ -58,14 +57,23 @@ export class TodoController {
     }
     return response;
   }
-  @Delete()
-  deleteTodo() {
+  @Delete(':id')
+  deleteTodo(@Param('id') idTodo: number) {
     console.log('Suppression dans la liste');
-    return 'Delete TODO';
+    this.todos = this.todos.filter((el) => el.id != idTodo);
+    return this.todos;
   }
   @Put()
-  updateTodo() {
+  updateTodo(@Body() updateTodo: TodoEntity) {
     console.log('Modification dans la liste');
+    console.log('Objet for update', updateTodo);
+    this.todos.forEach((el) => {
+      if (el.id == updateTodo.id) {
+        el.id = updateTodo.id;
+        el.name = updateTodo.name;
+        el.description = updateTodo.description;
+      }
+    });
     return 'Update TODO';
   }
 }
