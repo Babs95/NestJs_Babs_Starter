@@ -11,8 +11,9 @@ import {
 } from '@nestjs/common';
 import { TodoEntity } from '../entities/todo.entity';
 import { GetPaginatedTodoDto } from './dto/get-paginated-todo.Dto';
-import { AddTodoDto } from "./dto/add-todo.Dto";
-import { randomUUID } from "crypto";
+import { AddTodoDto } from './dto/add-todo.Dto';
+import { randomUUID } from 'crypto';
+import { UpdateTodoDto } from "./dto/update-todo.Dto";
 
 @Controller('todo')
 export class TodoController {
@@ -44,9 +45,10 @@ export class TodoController {
   @Post()
   addTodo(@Body() newTodo: AddTodoDto) {
     let response: string;
-    const todo: TodoEntity = new TodoEntity();
-    todo.name = newTodo.name;
-    todo.description = newTodo.description;
+    const todo = new TodoEntity();
+    const { name, description } = newTodo; // on décompose notre objet
+    todo.name = name;
+    todo.description = description;
     todo.createdAt = new Date();
     console.log('Ajout dans la liste');
     console.log('newTodo', newTodo);
@@ -92,14 +94,16 @@ export class TodoController {
   /**
    * Partial pour récupérer des parties de notre objet
    * */
-  updateTodo(@Body() updateTodo: Partial<TodoEntity>) {
+  updateTodo(@Body() updateTodo: Partial<UpdateTodoDto>) {
     console.log('Modification dans la liste');
+    updateTodo.updatedAt = new Date();
     console.log('Objet for update', updateTodo);
     this.todos.forEach((el) => {
       if (el.id == updateTodo.id) {
         el.id = updateTodo.id;
-        el.name = updateTodo.name;
+        el.name = updateTodo.name ? updateTodo.name : el.name;
         el.description = updateTodo.description;
+        el.updatedAt = updateTodo.updatedAt;
       }
     });
     return 'Update TODO';

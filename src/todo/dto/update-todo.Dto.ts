@@ -1,7 +1,6 @@
-export class TodoEntity {
+export class UpdateTodoDto {
   id: number;
   name: string;
   description: string;
-  createdAt: Date;
   updatedAt: Date;
 }
